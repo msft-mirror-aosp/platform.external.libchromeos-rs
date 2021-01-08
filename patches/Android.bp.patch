@@ -1,0 +1,31 @@
+diff --git a/Android.bp b/Android.bp
+index fc2c8b8..c4e3c5b 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -27,6 +27,9 @@ rust_test_host {
+ rust_test {
+     name: "libchromeos-rs_device_test_src_lib",
+     defaults: ["libchromeos-rs_defaults"],
++    // Manually limit to 64-bit to avoid depending on non-existing 32-bit build
++    // of libdata_model currently.
++    compile_multilib: "64",
+ }
+ 
+ rust_library {
+@@ -43,6 +46,16 @@ rust_library {
+         "liblog_rust",
+         "libprotobuf",
+     ],
++    apex_available: [
++        "//apex_available:platform",
++        "com.android.virt",
++    ],
++    // This library depends on libdata_model that is is part of crosvm project.
++    // Projects within crosvm on Android have only 64-bit target build enabled.
++    // As a result, we need to manually limit this build to 64-bit only, too.
++    // This is fine because this library is only used by crosvm now (thus 64-bit
++    // only).
++    compile_multilib: "64",
+ }
+ 
+ // dependent_library ["feature_list"]
